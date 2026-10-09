@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Calculadora de Ponto — horas trabalhadas, extras e banco de horas</title>
+  <meta name="description" content="Some as horas trabalhadas a partir das marcações de ponto: saldo do dia, banco de horas, tolerância da CLT, trabalho noturno e valor das horas extras.">
+  <meta name="theme-color" content="#4338ca">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏱️</text></svg>">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./src/app.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <h1>Calculadora de Ponto</h1>
+    <p class="lead">Some as horas trabalhadas, as horas extras e o banco de horas a partir das suas marcações de ponto.</p>
+  </header>
+
+  <main>
+    <section class="card" aria-labelledby="titulo-jornada">
+      <h2 id="titulo-jornada">Sua jornada</h2>
+      <div class="grid">
+        <div>
+          <label for="jornada">Jornada diária</label>
+          <select id="jornada"></select>
+          <div id="jornada-outra-box" class="sub-campo" hidden>
+            <label for="jornada-outra">Outra jornada (h:mm)</label>
+            <input id="jornada-outra" placeholder="ex.: 7:20" autocomplete="off">
+          </div>
+        </div>
+        <div>
+          <label for="escala">Horário contratual (opcional)</label>
+          <input id="escala" placeholder="ex.: 08:00 12:00 13:00 17:00" autocomplete="off" aria-describedby="dica-escala">
+          <p id="dica-escala" class="hint">Com ele, a tolerância é conferida marcação por marcação.</p>
+        </div>
+        <div>
+          <label for="valor-hora">Valor da hora (R$, opcional)</label>
+          <input id="valor-hora" inputmode="decimal" placeholder="ex.: 25,00" autocomplete="off">
+        </div>
+        <div>
+          <label for="adicional">Adicional de hora extra (%)</label>
+          <input id="adicional" inputmode="decimal" autocomplete="off">
+        </div>
+      </div>
+      <label class="check"><input type="checkbox" id="tolerancia"> Aplicar a tolerância da CLT: até 5 minutos por marcação e 10 minutos por dia (art. 58, § 1º)</label>
+      <ul id="avisos-jornada" class="avisos" aria-live="polite"></ul>
+    </section>
+
+    <section class="card" aria-labelledby="titulo-marcacoes">
+      <h2 id="titulo-marcacoes">Marcações</h2>
+      <p class="hint">Digite os horários em ordem: entrada, saída, entrada, saída… Exemplo: <code>08:00 12:00 13:00 17:48</code>. Também vale <code>8</code>, <code>0800</code> ou <code>8h30</code>. Turno que vira a noite: <code>22:00 06:00</code>.</p>
+      <p class="acoes">
+        <button type="button" class="btn secondary" id="semana">Semana atual</button>
+        <button type="button" class="btn secondary" id="mes">Mês atual (dias úteis)</button>
+        <button type="button" class="link" id="exemplo">Carregar um exemplo</button>
+      </p>
+      <p id="aviso-periodo" class="status" role="status"></p>
+      <div id="dias" class="dias"></div>
+      <p class="acoes"><button type="button" class="btn" id="add-dia">Adicionar dia</button></p>
+    </section>
+
+    <section class="card resumo" aria-labelledby="titulo-resumo">
+      <h2 id="titulo-resumo">Resumo do período</h2>
+      <div id="resumo" aria-live="polite"></div>
+      <p class="acoes"><button type="button" class="btn secondary" id="exportar">Exportar CSV</button></p>
+    </section>
+
+    <section class="card regras" aria-labelledby="titulo-regras">
+      <h2 id="titulo-regras">Regras usadas</h2>
+      <h3>Tolerância (CLT, art. 58, § 1º, e Súmula 366 do TST)</h3>
+      <p>Variações de até 5 minutos em cada marcação, somando no máximo 10 minutos no dia, não são descontadas nem contam como hora extra. Se o limite for ultrapassado, conta a diferença inteira, e não só o que passou dos 10 minutos.</p>
+      <p>Com o horário contratual preenchido, a calculadora compara cada marcação com o horário previsto. Sem ele, usa uma regra simplificada: saldo do dia de até 10 minutos, para mais ou para menos, vira zero.</p>
+      <h3>Trabalho noturno (CLT, art. 73)</h3>
+      <p>Para o trabalhador urbano, é noturno o trabalho entre 22h e 5h, e a hora noturna é contada como 52 minutos e 30 segundos: 7 horas de relógio valem 8 horas noturnas. A CLT também prevê adicional noturno de pelo menos 20% sobre a hora diurna. Aqui o saldo usa as horas de relógio, e a conversão para hora noturna reduzida aparece à parte.</p>
+      <h3>Saldo, banco de horas e horas extras</h3>
+      <p>O saldo do dia é o tempo trabalhado menos a jornada. O banco de horas é a soma dos saldos do período. As horas extras somam só os dias com saldo positivo, e o valor usa o valor da hora com o adicional informado (50% por padrão, o mínimo previsto na Constituição).</p>
+      <p class="aviso">Esta calculadora é uma ferramenta de apoio: não substitui o controle de ponto oficial da empresa nem orientação jurídica. Convenções e acordos coletivos podem ter regras próprias.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Tudo roda no seu navegador. Código aberto no <a href="https://github.com/micdog22/calculadora-de-ponto">GitHub</a> · Licença MIT</p>
+  </footer>
+</body>
+</html>

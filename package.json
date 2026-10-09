@@ -1,0 +1,11 @@
+{
+  "name": "calculadora-de-ponto",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Calcule horas trabalhadas, horas extras, banco de horas, tolerância da CLT e adicional noturno a partir das marcações de ponto.",
+  "type": "module",
+  "scripts": { "test": "node --test" },
+  "license": "MIT",
+  "repository": { "type": "git", "url": "git+https://github.com/micdog22/calculadora-de-ponto.git" },
+  "homepage": "https://micdog22.github.io/calculadora-de-ponto/"
+}
