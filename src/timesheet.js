@@ -47,10 +47,10 @@ export function formatDuration(minutes) {
   return `${Math.floor(abs / 60)}h${String(abs % 60).padStart(2, '0')}`;
 }
 
-/** Saldo com sinal: +83 → "+1h23", −15 → "−0h15", 0 → "0h00". */
+/** Saldo com sinal: +83 → "+1h23", -15 → "-0h15", 0 → "0h00". */
 export function formatBalance(minutes) {
   if (minutes === 0) return '0h00';
-  return `${minutes > 0 ? '+' : '−'}${formatDuration(minutes)}`;
+  return `${minutes > 0 ? '+' : '-'}${formatDuration(minutes)}`;
 }
 
 /** Tempo em segundos, mostrando os segundos só quando existem: 28800 → "8h00", 6171 → "1h42min51s". */
@@ -63,10 +63,10 @@ export function formatSeconds(seconds) {
 
 export function formatBRL(cents) {
   const reais = String(Math.floor(Math.abs(cents) / 100)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-  return `${cents < 0 ? '−' : ''}R$ ${reais},${String(Math.abs(cents) % 100).padStart(2, '0')}`;
+  return `${cents < 0 ? '-' : ''}R$ ${reais},${String(Math.abs(cents) % 100).padStart(2, '0')}`;
 }
 
-const SEPARATORS = /[\s,;/–—-]+/;
+const SEPARATORS = /[\s,;/\u2013\u2014-]+/;
 const FILLER_WORDS = new Set(['a', 'as', 'às', 'e', 'até']);
 
 /**
@@ -194,8 +194,8 @@ export function readSettings(input = {}) {
 // ---------- Dia e período ----------
 
 /**
- * day: { date, type: 'work' | 'off' | 'absence', markings, workload } — workload vazio usa a jornada padrão;
- * 'off' = folga ou feriado (jornada 0, todo o tempo trabalhado é extra); 'absence' = falta (saldo = −jornada).
+ * day: { date, type: 'work' | 'off' | 'absence', markings, workload }; workload vazio usa a jornada padrão;
+ * 'off' = folga ou feriado (jornada 0, todo o tempo trabalhado é extra); 'absence' = falta (saldo = -jornada).
  */
 export function computeDay(day, settings) {
   const type = ['off', 'absence'].includes(day.type) ? day.type : 'work';
@@ -360,8 +360,9 @@ function csvRaw(value) {
   return /[;"\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
-// No CSV o saldo positivo vai sem o "+", que a planilha leria como fórmula; o negativo usa "−".
-const csvBalance = (minutes) => formatBalance(minutes).replace(/^\+/, '');
+// No CSV o saldo positivo vai sem o "+", que a planilha leria como fórmula; no negativo, o hífen vira o
+// sinal de menos U+2212, que a planilha não confunde com fórmula.
+const csvBalance = (minutes) => formatBalance(minutes).replace(/^\+/, '').replace(/^-/, '\u2212');
 
 /** CSV com ponto e vírgula (abre direto no Excel e no LibreOffice em português). */
 export function toCSV(days, period) {

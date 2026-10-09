@@ -49,10 +49,10 @@ test('vários pares de entrada e saída', () => {
 
 test('formatação de saldos e durações', () => {
   assert.equal(formatBalance(83), '+1h23');
-  assert.equal(formatBalance(-15), '−0h15');
+  assert.equal(formatBalance(-15), '-0h15');
   assert.equal(formatBalance(0), '0h00');
   assert.equal(formatBalance(600), '+10h00');
-  assert.equal(formatBalance(-605), '−10h05');
+  assert.equal(formatBalance(-605), '-10h05');
   assert.equal(formatDuration(528), '8h48');
   assert.equal(formatSeconds(28800), '8h00');
   assert.equal(formatSeconds(6171), '1h42min51s');
@@ -61,7 +61,7 @@ test('formatação de saldos e durações', () => {
 });
 
 test('tolerância sem horário contratual: até 10 minutos de saldo no dia', () => {
-  assert.equal(balanceOf('08:04 12:00 13:00 17:00'), 0); // −4
+  assert.equal(balanceOf('08:04 12:00 13:00 17:00'), 0); // -4
   assert.equal(balanceOf('08:00 12:00 13:00 17:06'), 0); // +6
   assert.equal(balanceOf('07:50 12:00 13:00 17:00'), 0); // +10, no limite
   assert.equal(balanceOf('07:49 12:00 13:00 17:00'), 11); // +11 passa: conta tudo
@@ -130,10 +130,10 @@ test('folga, falta e dia sem marcações', () => {
 test('banco de horas do período e valor das extras', () => {
   const days = [
     day('08:00 12:00 13:00 18:00'), // +1h00
-    day('08:00 12:00 13:00 16:30'), // −0h30
+    day('08:00 12:00 13:00 16:30'), // -0h30
     day(''), // fica de fora
     day('08:00 12:00 13:00 17:05'), // +5, tolerância → 0
-    day('', { type: 'absence' }), // −8h00
+    day('', { type: 'absence' }), // -8h00
   ];
   const p = computePeriod(days, { workload: '8:00', tolerance: true, hourlyRate: '20,00', overtimePercent: '50' });
   assert.deepEqual(p.errors, []);
@@ -173,7 +173,7 @@ test('datas da semana e do mês', () => {
 test('CSV com ponto e vírgula e escape', () => {
   assert.equal(csvField('a;b'), '"a;b"');
   assert.equal(csvField('diz "oi"'), '"diz ""oi"""');
-  assert.equal(csvField('−0h15'), '−0h15');
+  assert.equal(csvField('\u22120h15'), '\u22120h15');
   assert.equal(csvField('-15'), "'-15");
   const days = [
     { date: '2026-10-05', type: 'work', markings: '08:00 12:00 13:00 17:48', workload: '' },
@@ -186,6 +186,6 @@ test('CSV com ponto e vírgula e escape', () => {
   assert.equal(lines[1], '05/10/2026;segunda-feira;Trabalho;08:00 12:00 13:00 17:48;8h00;8h48;0h48;48;0;;');
   assert.equal(lines[2], '06/10/2026;terça-feira;Trabalho;22:00 06:00;8h00;8h00;0h00;0;420;8h00;');
   assert.equal(lines[3], '07/10/2026;quarta-feira;Trabalho;;8h00;;;;;;Sem marcações: o dia não entra no saldo.');
-  assert.equal(lines[4], '08/10/2026;quinta-feira;Falta;;8h00;0h00;−8h00;-480;0;;Falta: o dia inteiro entra como débito.');
-  assert.equal(lines[5], 'Total;;;;24h00;16h48;−7h12;-432;420;8h00;3 dias calculados');
+  assert.equal(lines[4], '08/10/2026;quinta-feira;Falta;;8h00;0h00;\u22128h00;-480;0;;Falta: o dia inteiro entra como débito.');
+  assert.equal(lines[5], 'Total;;;;24h00;16h48;\u22127h12;-432;420;8h00;3 dias calculados');
 });
